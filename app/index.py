@@ -36,15 +36,15 @@ def extrair_itens_pedido(conteudo_pdf):
 
     produtos_lista = []
 
-    url = "https://docs.google.com/spreadsheets/d/1F-6EvxA7Llgw4CXurVgnQmoT10ULLjgc/gviz/tq?tqx=out:csv"
+    url = "https://docs.google.com/spreadsheets/d/10xH-WrGzH3efBqlrrUvX4kHotmL-sX19RN3_dn5YqyA/gviz/tq?tqx=out:csv"
     df_excel = pd.read_csv(url)
             
     for _, row in df_excel.iterrows():
-        if pd.isna(row['Código do Produto']):
+        if pd.isna(row['ID']):
             continue
 
-        codigo_produto = str(int(row['Código do Produto']))
-        nome_produto = str(row['Nome do Produto']).upper()
+        codigo_produto = str(int(row['ID']))
+        nome_produto = str(row['Produto']).upper()
         referencia = f"{codigo_produto} - {nome_produto}"
 
         if formatarReferencia(referencia) in formatarReferencia(conteudo_pdf):
@@ -57,9 +57,9 @@ def extrair_itens_pedido(conteudo_pdf):
 
 
 # Interface
-urlT = "https://docs.google.com/spreadsheets/d/10xH-WrGzH3efBqlrrUvX4kHotmL-sX19RN3_dn5YqyA/edit?usp=sharing"
+url = "https://docs.google.com/spreadsheets/d/10xH-WrGzH3efBqlrrUvX4kHotmL-sX19RN3_dn5YqyA/edit?usp=sharing"
 
-connT = st.connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 with st.sidebar:
     st.header("GERADOR DE ETIQUETAS CMB")
@@ -81,7 +81,7 @@ if arquivo_pedido:
             st.error("Nenhum cliente identificado no PDF.")
 
         # Carregar base de dados dos produtos e extrair itens do pedido
-        df_excel = connT.read(spreadsheet=urlT)
+        df_excel = conn.read(spreadsheet=url)
         pacote_dict = dict(zip(df_excel["Produto"], df_excel["ProdutoPacote"]))
         itens_pedido = extrair_itens_pedido(conteudo_pdf)
 
